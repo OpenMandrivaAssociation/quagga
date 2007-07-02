@@ -27,7 +27,7 @@
 
 Summary:	Routing daemon
 Name:           quagga
-Version:        0.99.6
+Version:        0.99.7
 Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
@@ -59,9 +59,12 @@ BuildRequires:	readline readline-devel ncurses ncurses-devel
 Prereq:		readline ncurses
 %endif
 # Initscripts > 5.60 is required for IPv6 support
-Prereq:		initscripts >= 5.60
-Prereq:		ncurses readline pam
-Prereq:		/sbin/install-info
+Requires(pre):		initscripts >= 5.60
+Requires:		initscripts >= 5.60
+Requires(pre):		ncurses readline pam
+Requires:		ncurses readline pam
+Requires(pre):		/sbin/install-info
+Requires:		/sbin/install-info
 Provides:	routingdaemon
 Obsoletes:	bird gated mrt zebra
 Provides:	bird gated mrt zebra
@@ -184,7 +187,7 @@ export CFLAGS="%{optflags} -fstack-protector"
     --with-cflags="%{optflags}" \
     --enable-netlink
 
-%make MAKEINFO="makeinfo --no-split"
+make MAKEINFO="makeinfo --no-split"
 
 pushd doc
     texi2html quagga.texi
