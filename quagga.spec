@@ -56,7 +56,7 @@ BuildRequires:	openssl-devel
 %endif
 %if %{with_vtysh}
 BuildRequires:	readline readline-devel ncurses ncurses-devel
-Prereq:		readline ncurses
+Requires:		readline ncurses
 %endif
 # Initscripts > 5.60 is required for IPv6 support
 Requires(pre):		initscripts >= 5.60
