@@ -22,13 +22,14 @@
 %define	zeb_rh_src	%{zeb_src}/redhat
 %define	zeb_docs	%{zeb_src}/doc
 
-%define	major 0
-%define libname	%mklibname %{name} %{major}
+%define major 0
+%define libname %mklibname %{name} %{major}
+%define develname %mklibname %{name} -d
 
 Summary:	Routing daemon
 Name:           quagga
-Version:        0.99.7
-Release:        %mkrel 2
+Version:        0.99.9
+Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
 URL:		http://www.quagga.net
@@ -98,14 +99,15 @@ Group:          System/Libraries
 %description -n	%{libname}
 This package provides the shared %{name} library.
 
-%package -n	%{libname}-devel
+%package -n	%{develname}
 Summary:	Header and object files for quagga development
 Group:		Development/C
+Requires:	%{libname} = %{version}
 Provides:	%{name}-devel = %{version}
 Provides:	lib%{name}-devel = %{version}
-Requires:	%{libname} = %{version}
+Obsoletes:	%{mklibname quagga 0 -d}
 
-%description -n	%{libname}-devel
+%description -n	%{develname}
 The quagga-devel package contains the header and object files necessary for
 developing OSPF-API and quagga applications.
 
@@ -376,7 +378,7 @@ fi
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 
-%files -n %{libname}-devel
+%files -n %{develname}
 %defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.a
@@ -388,5 +390,3 @@ fi
 %if %{with_ospfapi}
 %dir %{_includedir}/quagga/ospfapi/*
 %endif
-
-
