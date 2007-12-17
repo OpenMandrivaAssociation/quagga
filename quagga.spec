@@ -70,7 +70,6 @@ Provides:	routingdaemon
 Obsoletes:	bird gated mrt zebra
 Provides:	bird gated mrt zebra
 Requires:	%{libname} = %{version}
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
 Quagga is a free software that manages TCP/IP based routing
