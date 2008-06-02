@@ -247,7 +247,7 @@ chrpath -d %{buildroot}%{_sbindir}/*
 %endif
 # add quagga user and group
 %if %{quagga_user}
-%_pre_useradd %{quagga_user} %{_localstatedir} /sbin/nologin
+%_pre_useradd %{quagga_user} %{_localstatedir}/lib /sbin/nologin
 %endif
 
 %post
