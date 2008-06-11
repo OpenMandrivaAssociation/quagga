@@ -1,3 +1,5 @@
+%define _disable_ld_no_undefined 1
+
 # configure options
 %define with_snmp	0
 %define	with_vtysh	1
@@ -28,7 +30,7 @@
 
 Summary:	Routing daemon
 Name:           quagga
-Version:        0.99.9
+Version:        0.99.10
 Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
@@ -38,6 +40,7 @@ Source1:	http://www.quagga.net/download/%{name}-%{version}.tar.gz.asc
 Patch0:         quagga-0.96.3-netlink.patch
 Patch1:		quagga-0.96.5-nostart.patch
 Patch2:		quagga-0.98.2-gcc4.patch
+Patch3:		quagga-0.99.10-libcap.diff
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 Requires(pre): rpm-helper
@@ -117,6 +120,7 @@ developing OSPF-API and quagga applications.
 %patch0 -p1 -b .netlink
 %patch1 -p1 -b .nostart
 %patch2 -p1 -b .gcc4
+%patch3 -p0 -b .libcap
 
 %build
 export WANT_AUTOCONF_2_5=1
@@ -124,7 +128,7 @@ export CFLAGS="%{optflags} -fPIC"
 rm -f configure
 libtoolize --copy --force; aclocal-1.7; autoconf --force; automake-1.7; autoheader
 
-export CFLAGS="%{optflags} -fstack-protector"
+%serverbuild
 
 %configure2_5x \
     --sysconfdir=%{_sysconfdir}/quagga \
