@@ -37,7 +37,7 @@ Group:		System/Servers
 URL:		http://www.quagga.net
 Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.gz
 Source1:	http://www.quagga.net/download/%{name}-%{version}.tar.gz.asc
-Patch0:         quagga-0.96.3-netlink.patch
+Patch0:         quagga-0.99.11-netlink.patch
 Patch1:		quagga-0.96.5-nostart.patch
 Patch2:		quagga-0.98.2-gcc4.patch
 Patch3:		quagga-0.99.10-libcap.diff
@@ -123,13 +123,10 @@ developing OSPF-API and quagga applications.
 %patch3 -p0 -b .libcap
 
 %build
-export WANT_AUTOCONF_2_5=1
 export CFLAGS="%{optflags} -fPIC"
-rm -f configure
-libtoolize --copy --force; aclocal-1.7; autoconf --force; automake-1.7; autoheader
 
 %serverbuild
-
+autoreconf -fi
 %configure2_5x \
     --sysconfdir=%{_sysconfdir}/quagga \
     --localstatedir=/var/run/quagga \
