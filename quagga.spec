@@ -41,6 +41,7 @@ Patch0:         quagga-0.99.11-netlink.patch
 Patch1:		quagga-0.96.5-nostart.patch
 Patch2:		quagga-0.98.2-gcc4.patch
 Patch3:		quagga-0.99.10-libcap.diff
+Patch4:		quagga-0.99.11-fix-str-fmt.patch
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 Requires(pre): rpm-helper
@@ -115,12 +116,12 @@ The quagga-devel package contains the header and object files necessary for
 developing OSPF-API and quagga applications.
 
 %prep
-
 %setup  -q
 %patch0 -p1 -b .netlink
 %patch1 -p1 -b .nostart
 %patch2 -p1 -b .gcc4
 %patch3 -p0 -b .libcap
+%patch4 -p0 -b .str
 
 %build
 export CFLAGS="%{optflags} -fPIC"
