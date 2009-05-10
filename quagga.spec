@@ -30,8 +30,8 @@
 
 Summary:	Routing daemon
 Name:           quagga
-Version:        0.99.11
-Release:        %mkrel 2
+Version:        0.99.12
+Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
 URL:		http://www.quagga.net
