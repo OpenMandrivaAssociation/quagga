@@ -30,7 +30,7 @@
 
 Summary:	Routing daemon
 Name:           quagga
-Version:        0.99.13
+Version:        0.99.14
 Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
@@ -39,7 +39,6 @@ Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.gz
 Source1:	http://www.quagga.net/download/%{name}-%{version}.tar.gz.asc
 Patch0:         quagga-0.99.11-netlink.patch
 Patch1:		quagga-0.96.5-nostart.patch
-Patch2:		quagga-0.98.2-gcc4.patch
 Patch3:		quagga-0.99.10-libcap.diff
 Patch4:		quagga-0.99.11-fix-str-fmt.patch
 Requires(post): rpm-helper
@@ -119,7 +118,6 @@ developing OSPF-API and quagga applications.
 %setup  -q
 %patch0 -p1 -b .netlink
 %patch1 -p1 -b .nostart
-%patch2 -p1 -b .gcc4
 %patch3 -p0 -b .libcap
 %patch4 -p0 -b .str
 
