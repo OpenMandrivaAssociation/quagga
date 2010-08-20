@@ -30,7 +30,7 @@
 
 Summary:	Routing daemon
 Name:           quagga
-Version:        0.99.16
+Version:        0.99.17
 Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
