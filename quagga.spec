@@ -31,7 +31,7 @@
 Summary:	Routing daemon
 Name:           quagga
 Version:        0.99.17
-Release:        %mkrel 1
+Release:        %mkrel 2
 License:	GPL
 Group:		System/Servers
 URL:		http://www.quagga.net
@@ -51,7 +51,7 @@ BuildRequires:	tetex
 BuildRequires:	pam-devel
 BuildRequires:	libpcap-devel
 BuildRequires:	chrpath >= 0.12
-BuildRequires:	automake1.7
+BuildRequires:	automake
 BuildRequires:	autoconf2.5
 %if %{with_snmp}
 Requires:	net-snmp-mibs
