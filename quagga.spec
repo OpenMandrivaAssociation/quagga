@@ -48,10 +48,9 @@ Requires(post): rpm-helper
 Requires(preun): rpm-helper
 Requires(pre): rpm-helper
 Requires(postun): rpm-helper
-#BuildRequires:	texinfo
+BuildRequires:	texinfo
 #BuildRequires:	tetex-texi2html
 #BuildRequires:	tetex
-BuildRequires:	makeinfo
 BuildRequires:	pam-devel
 BuildRequires:	libpcap-devel
 BuildRequires:	chrpath >= 0.12
