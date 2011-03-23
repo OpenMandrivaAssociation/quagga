@@ -13,8 +13,9 @@
 %define	with_ospfclient	1
 %define	with_ospfapi	1
 %define	with_irdp	1
+%define	with_pim	1
 %define with_rtadv	1
-%define	with_isisd	1 
+%define	with_isisd	1
 %define	with_multipath	64
 %define	quagga_user	quagga
 %define	vty_group	quaggavt
@@ -31,12 +32,14 @@
 Summary:	Routing daemon
 Name:           quagga
 Version:        0.99.17
-Release:        %mkrel 2
+Release:        %mkrel 3
 License:	GPL
 Group:		System/Servers
 URL:		http://www.quagga.net
 Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.gz
 Source1:	http://www.quagga.net/download/%{name}-%{version}.tar.gz.asc
+Source2:	http://download-mirror.savannah.gnu.org/releases/qpimd/qpimd-0.162.tar.gz
+Source3:	pimd.init
 Patch0:         quagga-0.99.11-netlink.patch
 Patch1:		quagga-0.96.5-nostart.patch
 Patch3:		quagga-0.99.10-libcap.diff
@@ -67,7 +70,7 @@ Requires(pre):		initscripts >= 5.60
 Requires:		initscripts >= 5.60
 Requires(pre):		ncurses readline pam
 Requires:		ncurses readline pam
-Requires(preun):		info-install
+Requires(preun):	info-install
 Requires(post):		info-install
 Provides:	routingdaemon
 Obsoletes:	bird gated mrt zebra
@@ -121,6 +124,11 @@ developing OSPF-API and quagga applications.
 %patch3 -p0 -b .libcap
 %patch4 -p0 -b .str
 
+%if %{with_pim}
+tar xzf %{SOURCE2}
+patch -p1 --fuzz=0 < qpimd-0.162/pimd-0.162-quagga-0.99.17.patch
+%endif
+
 %build
 export CFLAGS="%{optflags} -fPIC"
 
@@ -173,6 +181,9 @@ autoreconf -fi
 %else
     --disable-isisd \
 %endif
+%if %{with_pim}
+    --enable-pimd \
+%endif
 %if %{with_pam}
     --with-libpam \
 %endif
@@ -209,10 +220,15 @@ install -d %{buildroot}/var/log/quagga
 install -d %{buildroot}/var/run/quagga
 install -d %{buildroot}%{_infodir}
 
+
 %makeinstall_std
 
 # Remove this file, as it is uninstalled and causes errors when building on RH9
 rm -rf %{buildroot}/usr/share/info/dir
+
+%if %{with_pim}
+install -m755 %{SOURCE3} %{buildroot}%{_initrddir}/pimd
+%endif
 
 install -m755 %{zeb_rh_src}/zebra.init %{buildroot}%{_initrddir}/zebra
 install -m755 %{zeb_rh_src}/bgpd.init %{buildroot}%{_initrddir}/bgpd
@@ -314,7 +330,7 @@ fi
 #
 %if %{quagga_user}
 %dir %attr(0751,%{quagga_user},%{quagga_user}) %{_sysconfdir}/quagga
-%dir %attr(0750,%{quagga_user},%{quagga_user}) /var/log/quagga 
+%dir %attr(0750,%{quagga_user},%{quagga_user}) /var/log/quagga
 %dir %attr(0751,%{quagga_user},%{quagga_user}) /var/run/quagga
 %else
 #
@@ -329,13 +345,16 @@ fi
 #
 %config(noreplace) %{_sysconfdir}/pam.d/quagga
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/logrotate.d/*
-%config(noreplace) %{_sysconfdir}/sysconfig/quagga                  
+%config(noreplace) %{_sysconfdir}/sysconfig/quagga
 %config(noreplace) %{_sysconfdir}/quagga/bgpd.conf*
 %config(noreplace) %{_sysconfdir}/quagga/ospf6d.conf*
 %config(noreplace) %{_sysconfdir}/quagga/ospfd.conf*
 %config(noreplace) %{_sysconfdir}/quagga/ripd.conf*
 %config(noreplace) %{_sysconfdir}/quagga/ripngd.conf*
 %config(noreplace) %{_sysconfdir}/quagga/zebra.conf*
+%if %{with_pim}
+%config(noreplace) %{_sysconfdir}/quagga/pimd.conf*
+%endif
 #
 %attr(0755,root,root) %{_initrddir}/bgpd
 %attr(0755,root,root) %{_initrddir}/ospf6d
@@ -344,6 +363,9 @@ fi
 %attr(0755,root,root) %{_initrddir}/ripngd
 %attr(0755,root,root) %{_initrddir}/watchquagga
 %attr(0755,root,root) %{_initrddir}/zebra
+%if %{with_pim}
+%attr(0755,root,root) %{_initrddir}/pimd
+%endif
 #
 %{_sbindir}/bgpd
 %{_sbindir}/ospf6d
@@ -353,6 +375,10 @@ fi
 %{_sbindir}/ripngd
 %{_sbindir}/watchquagga
 %{_sbindir}/zebra
+%if %{with_pim}
+%{_sbindir}/pimd
+%{_bindir}/test_igmpv3_join
+%endif
 #
 %if %{with_vtysh}
 %{_bindir}/vtysh
@@ -372,6 +398,9 @@ fi
 %attr(0644,root,root) %{_mandir}/man8/ripd.8*
 %attr(0644,root,root) %{_mandir}/man8/ripngd.8*
 %attr(0644,root,root) %{_mandir}/man8/zebra.8*
+%if %{with_pim}
+%attr(0644,root,root) %{_mandir}/man8/pimd.8*
+%endif
 %{_infodir}/*info*
 
 %files contrib
