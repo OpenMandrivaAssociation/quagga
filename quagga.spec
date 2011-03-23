@@ -49,6 +49,7 @@ Requires(preun): rpm-helper
 Requires(pre): rpm-helper
 Requires(postun): rpm-helper
 BuildRequires:	texinfo
+BuildRequires:  texi2html
 #BuildRequires:	tetex-texi2html
 #BuildRequires:	tetex
 BuildRequires:	pam-devel
