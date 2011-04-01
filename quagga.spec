@@ -31,8 +31,8 @@
 
 Summary:	Routing daemon
 Name:           quagga
-Version:        0.99.17
-Release:        %mkrel 3
+Version:        0.99.18
+Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
 URL:		http://www.quagga.net
@@ -43,7 +43,10 @@ Source3:	pimd.init
 Patch0:         quagga-0.99.11-netlink.patch
 Patch1:		quagga-0.96.5-nostart.patch
 Patch3:		quagga-0.99.10-libcap.diff
-Patch4:		quagga-0.99.11-fix-str-fmt.patch
+# upstream patches
+Patch4:		quagga-0.99.18-opaque-enable.patch
+Patch5:		quagga-0.99.18-opaque-refresh-fixes.patch
+Patch100:	pimd-0.162-quagga-0.99.18.diff
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
 Requires(pre): rpm-helper
@@ -124,11 +127,13 @@ developing OSPF-API and quagga applications.
 %patch0 -p1 -b .netlink
 %patch1 -p1 -b .nostart
 %patch3 -p0 -b .libcap
-%patch4 -p0 -b .str
+%patch4 -p1 -b .opaque-enable
+%patch5 -p1 -b .opaque-refresh-fixes
 
 %if %{with_pim}
 tar xzf %{SOURCE2}
-patch -p1 --fuzz=0 < qpimd-0.162/pimd-0.162-quagga-0.99.17.patch
+#patch -p1 --fuzz=0 < qpimd-0.162/pimd-0.162-quagga-0.99.17.patch
+%patch100 -p1
 %endif
 
 %build
