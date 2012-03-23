@@ -37,7 +37,6 @@ License:	GPL
 Group:		System/Servers
 URL:		http://www.quagga.net
 Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.gz
-Source1:	http://www.quagga.net/download/%{name}-%{version}.tar.gz.asc
 Source2:	http://download-mirror.savannah.gnu.org/releases/qpimd/qpimd-0.162.tar.gz
 Source3:	pimd.init
 Patch0:         quagga-0.99.11-netlink.patch
