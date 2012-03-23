@@ -31,7 +31,7 @@
 
 Summary:	Routing daemon
 Name:           quagga
-Version:        0.99.20
+Version:        0.99.20.1
 Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
@@ -56,8 +56,7 @@ BuildRequires:  texlive
 BuildRequires:	pam-devel
 BuildRequires:	libpcap-devel
 BuildRequires:	chrpath >= 0.12
-BuildRequires:	automake
-BuildRequires:	autoconf2.5
+BuildRequires:	autoconf automake libtool
 %if %{with_snmp}
 Requires:	net-snmp-mibs
 BuildRequires:	net-snmp-devel
@@ -78,7 +77,6 @@ Provides:	routingdaemon
 Obsoletes:	bird gated mrt zebra
 Provides:	bird gated mrt zebra
 Requires:	%{libname} = %{version}
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
 Quagga is a free software that manages TCP/IP based routing
@@ -120,6 +118,7 @@ The quagga-devel package contains the header and object files necessary for
 developing OSPF-API and quagga applications.
 
 %prep
+
 %setup  -q
 %patch0 -p1 -b .netlink
 %patch1 -p1 -b .nostart
@@ -209,7 +208,6 @@ pushd doc
 popd
 
 %install
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
 
 # don't fiddle with the initscript!
 export DONT_GPRINTIFY=1
@@ -257,6 +255,8 @@ install -m644 %{zeb_rh_src}/quagga.pam %{buildroot}%{_sysconfdir}/pam.d/quagga
 # nuke rpath
 chrpath -d %{buildroot}%{_bindir}/*
 chrpath -d %{buildroot}%{_sbindir}/*
+
+rm -f %{buildroot}%{_libdir}/*.*a
 
 %pre
 # add vty_group
@@ -314,19 +314,7 @@ fi
 %_postun_userdel %{quagga_user}
 %endif
 
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
-
-%clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
-
 %files
-%defattr(-,root,root)
 %doc */*.sample* AUTHORS COPYING doc/quagga.html doc/mpls
 %doc ChangeLog INSTALL NEWS README REPORTING-BUGS SERVICES TODO
 #
@@ -406,18 +394,13 @@ fi
 %{_infodir}/*info*
 
 %files contrib
-%defattr(-,root,root)
 %doc tools
 
 %files -n %{libname}
-%defattr(-,root,root)
 %{_libdir}/*.so.*
 
 %files -n %{develname}
-%defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/*.a
-%{_libdir}/*.la
 %dir %{_includedir}/quagga
 %{_includedir}/quagga/*.h
 %dir %{_includedir}/quagga/ospfd/*
