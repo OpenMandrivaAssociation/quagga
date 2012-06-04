@@ -30,48 +30,50 @@
 %define develname %mklibname %{name} -d
 
 Summary:	Routing daemon
-Name:           quagga
-Version:        0.99.20.1
-Release:        %mkrel 1
+Name:		quagga
+Version:	0.99.21
+Release:	1
 License:	GPL
 Group:		System/Servers
 URL:		http://www.quagga.net
-Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.gz
+Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.xz
 Source2:	http://download-mirror.savannah.gnu.org/releases/qpimd/qpimd-0.162.tar.gz
 Source3:	pimd.init
-Patch0:         quagga-0.99.11-netlink.patch
+Patch0:		quagga-0.99.11-netlink.patch
 Patch1:		quagga-0.96.5-nostart.patch
 Patch3:		quagga-0.99.10-libcap.diff
 Patch100:	pimd-0.162-quagga-0.99.20.diff
-Requires(post): rpm-helper
+Requires(post):	rpm-helper
 Requires(preun): rpm-helper
-Requires(pre): rpm-helper
+Requires(pre):	rpm-helper
 Requires(postun): rpm-helper
 BuildRequires:	texinfo
-BuildRequires:  texi2html
-BuildRequires:  texlive
-#BuildRequires:	tetex-texi2html
-#BuildRequires:	tetex
+BuildRequires:	texi2html
+BuildRequires:	texlive
 BuildRequires:	pam-devel
 BuildRequires:	libpcap-devel
 BuildRequires:	chrpath >= 0.12
-BuildRequires:	autoconf automake libtool
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool
 %if %{with_snmp}
 Requires:	net-snmp-mibs
 BuildRequires:	net-snmp-devel
 BuildRequires:	openssl-devel
 %endif
 %if %{with_vtysh}
-BuildRequires:	readline readline-devel ncurses ncurses-devel
-Requires:		readline ncurses
+BuildRequires:	readline
+BuildRequires:	readline-devel
+BuildRequires:	ncurses
+BuildRequires:	ncurses-devel
+Requires:	readline
+BuildRequires:	ncurses
 %endif
 # Initscripts > 5.60 is required for IPv6 support
-Requires(pre):		initscripts >= 5.60
-Requires:		initscripts >= 5.60
-Requires(pre):		ncurses readline pam
-Requires:		ncurses readline pam
-Requires(preun):	info-install
-Requires(post):		info-install
+Requires(pre):	initscripts >= 5.60
+Requires:	initscripts >= 5.60
+Requires(pre):	ncurses readline pam
+Requires:	ncurses readline pam
 Provides:	routingdaemon
 Obsoletes:	bird gated mrt zebra
 Provides:	bird gated mrt zebra
@@ -99,7 +101,7 @@ Contributed/3rd party tools which may be of use with quagga.
 
 %package -n	%{libname}
 Summary:	Shared %{name} library
-Group:          System/Libraries
+Group:		System/Libraries
 
 %description -n	%{libname}
 This package provides the shared %{name} library.
@@ -117,7 +119,6 @@ The quagga-devel package contains the header and object files necessary for
 developing OSPF-API and quagga applications.
 
 %prep
-
 %setup  -q
 %patch0 -p1 -b .netlink
 %patch1 -p1 -b .nostart
@@ -207,7 +208,6 @@ pushd doc
 popd
 
 %install
-
 # don't fiddle with the initscript!
 export DONT_GPRINTIFY=1
 
@@ -278,8 +278,6 @@ rm -f %{buildroot}%{_libdir}/*.*a
 %_post_service bgpd
 %_post_service watchquagga
 
-%_install_info %{name}.info
-
 # Create dummy files if they don't exist so basic functions can be used.
 if [ ! -e %{_sysconfdir}/quagga/zebra.conf ]; then
 	echo "hostname `hostname`" > %{_sysconfdir}/quagga/zebra.conf
@@ -305,8 +303,6 @@ fi
 %endif
 %_preun_service bgpd
 %_preun_service watchquagga
-
-%_remove_install_info %{name}.info
 
 %postun
 %if %{quagga_user}
