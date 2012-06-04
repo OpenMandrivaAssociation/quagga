@@ -40,7 +40,6 @@ Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.xz
 Source2:	http://download-mirror.savannah.gnu.org/releases/qpimd/qpimd-0.162.tar.gz
 Source3:	pimd.init
 Patch0:		quagga-0.99.11-netlink.patch
-Patch1:		quagga-0.96.5-nostart.patch
 Patch3:		quagga-0.99.10-libcap.diff
 Patch100:	pimd-0.162-quagga-0.99.20.diff
 Requires(post):	rpm-helper
@@ -121,7 +120,6 @@ developing OSPF-API and quagga applications.
 %prep
 %setup  -q
 %patch0 -p1 -b .netlink
-%patch1 -p1 -b .nostart
 %patch3 -p0 -b .libcap
 
 %if %{with_pim}
