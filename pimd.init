@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# chkconfig: - 16 84
+# description: PIM-SSM multicast routing engine for use with Quagga
+#
+# processname: pimd
+# config: /etc/zebra/pimd.conf
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+# quagga command line options
+. /etc/sysconfig/quagga
+
+# Check that networking is up.
+[ "${NETWORKING}" = "no" ] && exit 0
+
+# The process must be configured first.
+[ -f /etc/quagga/pimd.conf ] || exit 0
+
+RETVAL=0
+prog="pimd"
+
+case "$1" in
+  start)
+	echo -n $"Starting $prog: "
+        daemon /usr/sbin/pimd -d $pimd_OPTS
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/pimd
+	echo
+	;;
+  stop)
+	echo -n $"Shutting down $prog: "
+	killproc pimd
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/pimd
+	echo
+	;;
+  restart|reload)
+        $0 stop
+        $0 start
+	RETVAL=$?
+        ;;
+  condrestart)
+        if [ -f /var/lock/subsys/pimd ]; then
+                $0 stop
+		$0 start
+        fi
+	RETVAL=$?
+        ;;
+  status)
+        status pimd
+	RETVAL=$?
+        ;;
+  *)
+	echo $"Usage: $0 {start|stop|restart|reload|condrestart|status}"
+	exit 1
+esac
+
+exit $RETVAL

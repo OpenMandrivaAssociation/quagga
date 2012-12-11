@@ -30,49 +30,48 @@
 %define develname %mklibname %{name} -d
 
 Summary:	Routing daemon
-Name:		quagga
-Version:	0.99.21
-Release:	1
+Name:           quagga
+Version:        0.99.20.1
+Release:        %mkrel 1
 License:	GPL
 Group:		System/Servers
 URL:		http://www.quagga.net
-Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.xz
+Source0:	http://www.quagga.net/download/%{name}-%{version}.tar.gz
 Source2:	http://download-mirror.savannah.gnu.org/releases/qpimd/qpimd-0.162.tar.gz
 Source3:	pimd.init
-Patch0:		quagga-0.99.11-netlink.patch
+Patch0:         quagga-0.99.11-netlink.patch
+Patch1:		quagga-0.96.5-nostart.patch
 Patch3:		quagga-0.99.10-libcap.diff
 Patch100:	pimd-0.162-quagga-0.99.20.diff
-Requires(post):	rpm-helper
+Requires(post): rpm-helper
 Requires(preun): rpm-helper
-Requires(pre):	rpm-helper
+Requires(pre): rpm-helper
 Requires(postun): rpm-helper
 BuildRequires:	texinfo
-BuildRequires:	texi2html
-BuildRequires:	texlive
+BuildRequires:  texi2html
+BuildRequires:  texlive
+#BuildRequires:	tetex-texi2html
+#BuildRequires:	tetex
 BuildRequires:	pam-devel
 BuildRequires:	libpcap-devel
 BuildRequires:	chrpath >= 0.12
-BuildRequires:	autoconf
-BuildRequires:	automake
-BuildRequires:	libtool
+BuildRequires:	autoconf automake libtool
 %if %{with_snmp}
 Requires:	net-snmp-mibs
 BuildRequires:	net-snmp-devel
 BuildRequires:	openssl-devel
 %endif
 %if %{with_vtysh}
-BuildRequires:	readline
-BuildRequires:	readline-devel
-BuildRequires:	ncurses
-BuildRequires:	ncurses-devel
-Requires:	readline
-BuildRequires:	ncurses
+BuildRequires:	readline readline-devel ncurses ncurses-devel
+Requires:		readline ncurses
 %endif
 # Initscripts > 5.60 is required for IPv6 support
-Requires(pre):	initscripts >= 5.60
-Requires:	initscripts >= 5.60
-Requires(pre):	ncurses readline pam
-Requires:	ncurses readline pam
+Requires(pre):		initscripts >= 5.60
+Requires:		initscripts >= 5.60
+Requires(pre):		ncurses readline pam
+Requires:		ncurses readline pam
+Requires(preun):	info-install
+Requires(post):		info-install
 Provides:	routingdaemon
 Obsoletes:	bird gated mrt zebra
 Provides:	bird gated mrt zebra
@@ -100,7 +99,7 @@ Contributed/3rd party tools which may be of use with quagga.
 
 %package -n	%{libname}
 Summary:	Shared %{name} library
-Group:		System/Libraries
+Group:          System/Libraries
 
 %description -n	%{libname}
 This package provides the shared %{name} library.
@@ -118,8 +117,10 @@ The quagga-devel package contains the header and object files necessary for
 developing OSPF-API and quagga applications.
 
 %prep
+
 %setup  -q
 %patch0 -p1 -b .netlink
+%patch1 -p1 -b .nostart
 %patch3 -p0 -b .libcap
 
 %if %{with_pim}
@@ -206,6 +207,7 @@ pushd doc
 popd
 
 %install
+
 # don't fiddle with the initscript!
 export DONT_GPRINTIFY=1
 
@@ -276,6 +278,8 @@ rm -f %{buildroot}%{_libdir}/*.*a
 %_post_service bgpd
 %_post_service watchquagga
 
+%_install_info %{name}.info
+
 # Create dummy files if they don't exist so basic functions can be used.
 if [ ! -e %{_sysconfdir}/quagga/zebra.conf ]; then
 	echo "hostname `hostname`" > %{_sysconfdir}/quagga/zebra.conf
@@ -301,6 +305,8 @@ fi
 %endif
 %_preun_service bgpd
 %_preun_service watchquagga
+
+%_remove_install_info %{name}.info
 
 %postun
 %if %{quagga_user}
@@ -401,3 +407,170 @@ fi
 %if %{with_ospfapi}
 %dir %{_includedir}/quagga/ospfapi/*
 %endif
+
+
+%changelog
+* Fri Mar 23 2012 Oden Eriksson <oeriksson@mandriva.com> 0.99.20.1-1mdv2012.0
++ Revision: 786342
+- drop one file
+- 0.99.20.1 (fixes CVE-2012-0249, CVE-2012-0250, CVE-2012-0255)
+- various fixes
+
+* Fri Sep 30 2011 Oden Eriksson <oeriksson@mandriva.com> 0.99.20-1
++ Revision: 702097
+- 0.99.20
+- simplify the pimd-0.162-quagga-0.99.18.diff patch
+- drop upstream applied patches
+- the quagga-0.99.11-fix-str-fmt.patch was silently fixed with no CVE assignment, well..., ok!
+- 0.99.19 fixed CVE-2011-3323, CVE-2011-3324, CVE-2011-3325, CVE-2011-3326, CVE-2011-3327
+
+* Fri Apr 01 2011 Oden Eriksson <oeriksson@mandriva.com> 0.99.18-1
++ Revision: 649653
+- readd one rediffed patch
+- 0.99.18
+
+* Thu Mar 24 2011 zamir <zamir@mandriva.org> 0.99.17-3
++ Revision: 648238
+- try pseudo patch
+- wait fix error: texlive-20110312-1-mdv2011.0.x86_64 (due to unsatisfied texlive-texmf[*])
+- try texi2html
+- try again
+- try again
+- test requarements
+- add pim-ssm support
+
+* Mon Jan 03 2011 Oden Eriksson <oeriksson@mandriva.com> 0.99.17-2mdv2011.0
++ Revision: 627819
+- don't force the usage of automake1.7
+
+* Fri Aug 20 2010 Michael Scherer <misc@mandriva.org> 0.99.17-1mdv2011.0
++ Revision: 571432
+- update to new version 0.99.17
+
+* Thu Mar 11 2010 Oden Eriksson <oeriksson@mandriva.com> 0.99.16-1mdv2010.1
++ Revision: 517985
+- 0.99.16
+
+* Sun Aug 30 2009 Oden Eriksson <oeriksson@mandriva.com> 0.99.15-1mdv2010.0
++ Revision: 422370
+- 0.99.15
+
+* Wed Jul 22 2009 Oden Eriksson <oeriksson@mandriva.com> 0.99.14-1mdv2010.0
++ Revision: 398483
+- 0.99.14
+
+* Thu Jun 25 2009 Frederik Himpe <fhimpe@mandriva.org> 0.99.13-1mdv2010.0
++ Revision: 389184
+- update to new version 0.99.13
+
+* Sun May 10 2009 Oden Eriksson <oeriksson@mandriva.com> 0.99.12-1mdv2010.0
++ Revision: 373982
+- 0.99.12 (fixes CVE-2009-1572)
+
+* Fri Apr 03 2009 Funda Wang <fwang@mandriva.org> 0.99.11-2mdv2009.1
++ Revision: 363812
+- bump rel
+- fix str fmt
+- rediff netlink patch
+
+* Sat Oct 11 2008 Oden Eriksson <oeriksson@mandriva.com> 0.99.11-1mdv2009.1
++ Revision: 291860
+- 0.99.11
+
+* Fri Aug 08 2008 Thierry Vignaud <tv@mandriva.org> 0.99.10-2mdv2009.0
++ Revision: 269101
+- rebuild early 2009.0 package (before pixel changes)
+
+* Wed Jun 11 2008 Oden Eriksson <oeriksson@mandriva.com> 0.99.10-1mdv2009.0
++ Revision: 218009
+- 0.99.10
+- use _disable_ld_no_undefined to fix linkage
+- added P3 to fix other linkage
+- use the %%serverbuild macro
+
+  + Pixel <pixel@mandriva.com>
+    - do not call ldconfig in %%post/%%postun, it is now handled by filetriggers
+    - adapt to %%_localstatedir now being /var instead of /var/lib (#22312)
+
+  + Olivier Blin <blino@mandriva.org>
+    - restore BuildRoot
+
+  + Thierry Vignaud <tv@mandriva.org>
+    - kill re-definition of %%buildroot on Pixel's request
+
+* Thu Sep 13 2007 Oden Eriksson <oeriksson@mandriva.com> 0.99.9-1mdv2008.1
++ Revision: 84923
+- 0.99.9
+
+* Mon Aug 27 2007 Thierry Vignaud <tv@mandriva.org> 0.99.7-2mdv2008.0
++ Revision: 72252
+- fix info-install requires
+- convert prereq
+- kill file require on info-install
+
+* Mon Jul 02 2007 Andreas Hasenack <andreas@mandriva.com> 0.99.7-1mdv2008.0
++ Revision: 47301
+- updated to version 0.99.7 (fixes #30596)
+
+
+* Wed Mar 07 2007 Oden Eriksson <oeriksson@mandriva.com> 0.99.6-1mdv2007.0
++ Revision: 134493
+- Import quagga
+
+* Wed Mar 07 2007 Oden Eriksson <oeriksson@mandriva.com> 0.99.6-1mdv2007.1
+- 0.99.6
+- synced patches with fc (0.98.6-3.fc7)
+- enable -fstack-protector
+
+* Tue Feb 21 2006 Oden Eriksson <oeriksson@mandriva.com> 0.99.3-1mdk
+- 0.99.3
+- use dynamic uid/gid
+- rediff P0 and install the pam_stack.so version if needed
+
+* Wed Aug 31 2005 Oden Eriksson <oeriksson@mandriva.com> 0.98.5-1mdk
+- 0.98.5
+- fix deps
+
+* Wed Jun 29 2005 Oden Eriksson <oeriksson@mandriva.com> 0.98.4-1mdk
+- 0.98.4
+
+* Sat Apr 09 2005 Oden Eriksson <oeriksson@mandrakesoft.com> 0.98.3-1mdk
+- 0.98.3
+- use the %%mkrel macro
+- misc rpmlint fixes
+
+* Fri Feb 04 2005 Oden Eriksson <oeriksson@mandrakesoft.com> 0.98.0-2mdk
+- rebuilt against new readline
+
+* Tue Jan 18 2005 Oden Eriksson <oeriksson@mandrakesoft.com> 0.98.0-1mdk
+- 0.98.0
+
+* Fri Dec 31 2004 Oden Eriksson <oeriksson@mandrakesoft.com> 0.97.4-3mdk
+- revert latest "lib64 fixes"
+- fixed the install info error
+- make it require the explicit libname version
+
+* Wed Dec 29 2004 Oden Eriksson <oeriksson@mandrakesoft.com> 0.97.4-2mdk
+- make it compile on 10.0
+
+* Tue Dec 28 2004 Oden Eriksson <oeriksson@mandrakesoft.com> 0.97.4-1mdk
+- 0.97.4
+- rediffed P0
+- added watchquagga
+- use the %%configure2_5x macro and libifiction
+- nuke rpath
+- misc spec file fixes
+
+* Wed Aug 18 2004 Oden Eriksson <oeriksson@mandrakesoft.com> 0.96.5-1mdk
+- quagga-0.96.5 (the zebra fork, fedora import)
+
+* Wed Jun 16 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Wed May 05 2004 Jay Fenlason <fenlason@redhat.com> 0.96.5-0
+- New upstream version
+- Change includedir
+- Change the pre scriptlet to fail if the useradd command fails.
+- Remove obsolete patches from this .spec file and renumber the two
+  remaining ones.
+
