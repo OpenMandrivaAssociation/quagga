@@ -70,8 +70,6 @@ Requires(pre):		initscripts >= 5.60
 Requires:		initscripts >= 5.60
 Requires(pre):		ncurses readline pam
 Requires:		ncurses readline pam
-Requires(preun):	info-install
-Requires(post):		info-install
 Provides:	routingdaemon
 Obsoletes:	bird gated mrt zebra
 Provides:	bird gated mrt zebra
