@@ -1,3 +1,2 @@
 sources:
-  "qpimd-0.162.tar.gz": 258cb31c9d90bf96eadabc03da207912826c2988
-  "quagga-0.99.20.1.tar.gz": 3034155e285bc6fb6cdaeced0d79a570fffb3471
+  quagga-1.2.4.tar.gz: 8e1471624f5baf54b53be6636e451824d3ef15f6
