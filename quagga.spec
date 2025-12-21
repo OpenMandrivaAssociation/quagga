@@ -39,6 +39,7 @@ URL:		https://www.nongnu.org/quagga/
 Source0:	https://github.com/Quagga/quagga/releases/download/quagga-1.2.4/quagga-1.2.4.tar.gz
 Patch0:         quagga-0.99.11-netlink.patch
 Patch1:		quagga-1.2.4-fix-build-with-fcommon.patch
+BuildRequires:	libtool-base
 BuildRequires:	texinfo
 BuildRequires:  texi2html
 BuildRequires:  texlive
